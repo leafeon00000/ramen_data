@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_9d3b1a49ae9e4b55aec909c92e720d3b {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>    
+    
+            <div class="folium-map" id="map_9d3b1a49ae9e4b55aec909c92e720d3b" ></div>
+        
+</body>
+<script>    
+    
+            var map_9d3b1a49ae9e4b55aec909c92e720d3b = L.map(
+                "map_9d3b1a49ae9e4b55aec909c92e720d3b",
+                {
+                    center: [35.710063, 139.8107],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 18,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_fc2a980425f74528b987f11e4f5087cf = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_9d3b1a49ae9e4b55aec909c92e720d3b);
+        
+    
+            var marker_86f482661629410884586d56aa4c7a07 = L.marker(
+                [35.710063, 139.8107],
+                {}
+            ).addTo(map_9d3b1a49ae9e4b55aec909c92e720d3b);
+        
+    
+            var icon_73b40be38ed94380a3a05dc4d064ca9e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "bell", "iconColor": "#ffff00", "markerColor": "purple", "prefix": "glyphicon"}
+            );
+            marker_86f482661629410884586d56aa4c7a07.setIcon(icon_73b40be38ed94380a3a05dc4d064ca9e);
+        
+    
+        var popup_42c70b3b2c2340b5b05151ebf8ec1c2a = L.popup({"maxWidth": "100%"});
+
+        
+            var html_09870c2ac949474c878d8d2e8363760a = $(`<div id="html_09870c2ac949474c878d8d2e8363760a" style="width: 100.0%; height: 100.0%;"><span style='white-space: nowrap'>東京スカイツリー</span></br><a href='https://www.tokyo-skytree.jp/' target='_blank'> サイト </a></div>`)[0];
+            popup_42c70b3b2c2340b5b05151ebf8ec1c2a.setContent(html_09870c2ac949474c878d8d2e8363760a);
+        
+
+        marker_86f482661629410884586d56aa4c7a07.bindPopup(popup_42c70b3b2c2340b5b05151ebf8ec1c2a)
+        ;
+
+        
+    
+</script>
