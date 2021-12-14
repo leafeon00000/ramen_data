@@ -16,7 +16,7 @@ class MakeRamenMap() :
     Parameters
     ----------
     ramen_type : String
-      ラーメンの種類
+      ラーメンの種類を指定する
         "2" : 家系  "3" : 二郎系
     """
 
@@ -64,7 +64,8 @@ class MakeRamenMap() :
     )
 
     # TODO : フィルターが効かないのであとで検証する。
-    df2 = df[df["rating_value"] < 98].fillna("")
+    #df2 = df[df["rating_value"] < 98].fillna("")
+    df2 = df.fillna("")
 
     return df2
 
@@ -84,6 +85,7 @@ class MakeRamenMap() :
       zoom_start=12
     )
 
+    # ピンが密集していたらまとめる設定
     #ramen_map = MarkerCluster().add_to(ramen_map)
 
     for row in df.itertuples():
@@ -95,8 +97,8 @@ class MakeRamenMap() :
       if row[8] == "" or row[9] == "":
         continue
 
-      if float(row[4]) < 97:
-        break
+      #if float(row[4]) < 98:
+        #break
 
       popup_label = self.make_popup(row[2], row[3], str(
           round(row[4])), row[10], row[11], row[12], row[13])
@@ -233,11 +235,13 @@ class MakeRamenMap() :
     elif rating_value > 85.0:
       pin_color = "orange"
     elif rating_value > 80.0:
-      pin_color = "beige"
+      pin_color = "green"
     elif rating_value > 75.0:
-      pin_color = "lightgreen"
+      pin_color = "darkgreen"
+    elif rating_value == 0:
+      pin_color = "gray"
     else:
-      pin_color = "lightblue"
+      pin_color = "cadetblue"
 
     icon=folium.Icon(
         icon=icon_obj,
