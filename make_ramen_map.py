@@ -112,6 +112,9 @@ class MakeRamenMap() :
           icon=c_icon
       ).add_to(ramen_map)
 
+    #Layerをmy_mapへ追加
+    folium.LayerControl().add_to(ramen_map)
+
     ramen_map.save("./map/ramen_map.html")
 
   def make_popup(self, shop_name, url, rating_value, official_site, facebook, twitter, instagram):

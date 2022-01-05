@@ -67,21 +67,20 @@ else:
   detail_info = soup.find("script", type="application/ld+json").text
   js = json.loads(detail_info)
 
-  print(js["name"])
-  print(target_url)
-  print(js["aggregateRating"]["ratingValue"])
-  print(js["aggregateRating"]["ratingCount"])
-  print(js["geo"]["latitude"])
-  print(js["geo"]["longitude"])
-  print(js["name"])
-  print(js["address"]["postalCode"])
-  print(js["address"]["addressRegion"])
-  print(js["address"]["addressLocality"])
-  print(js["address"]["streetAddress"])
-  print(js["telephone"])
+  print(js["name"])  # 店舗名
+  print(target_url)  # 食べログのURL
+  print(js["aggregateRating"]["ratingValue"])  # レート
+  print(js["aggregateRating"]["ratingCount"])  # レビュー数
+  print(js["geo"]["latitude"])  # 緯度
+  print(js["geo"]["longitude"])  # 経度
+  print(js["address"]["postalCode"])  # 郵便番号
+  print(js["address"]["addressRegion"])  # 住所(都道府県)
+  print(js["address"]["addressLocality"])  # 住所(市区町村)
+  print(js["address"]["streetAddress"])  # 住所(その他)
+  print(js["telephone"])  # 電話番号
 
   moyori = soup.find(text="最寄り駅：").parent.parent.find("span").text
-  print(moyori)
+  print(moyori)  # 最寄駅
 
   eigyo = soup.select_one(
       "#rst-data-head").select(".rstinfo-table__subject-text")
@@ -91,9 +90,15 @@ else:
         "<br/>", "\r\n").replace('<p class="rstinfo-table__subject-text">', "").replace("</p>","")
     #s3 = re.sub("<.*>", "", s2)
 
-    print(s2)
+    print(s2)  # 営業時間情報
 
+  if not soup.select_one(".homepage") is None:
+    homepage = soup.select_one(".homepage").find("a").get("href")  # ホームページ
+    print(homepage)
 
+  if not soup.find(text="公式アカウント") is None:
+    kousiki = soup.find(text="公式アカウント").parent.parent.find("a").get("href")
+    print(kousiki)
 
     #.replace("<br/>", "/r/n")
 
