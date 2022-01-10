@@ -1,38 +1,64 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-import write_csv as wc
 import json
 import pandas as pd
 import traceback
 import logging
 import datetime
+import configparser
+import os
+import errno
 
 class GetRamenDb() :
   """
   ラーメンデータベースからラーメン屋情報を取得するクラス。
   """
 
-  def __init__(self, tag, test_mode):
+  def __init__(self, ramen_type, test_mode):
     """
     コンストラクタ　変数を設定する
 
     Parameters
     ----------
-    tag : String
+    ramen_type : String
       "2" : 家系  "3" : 二郎系
     test_mode : boolian
       テストモードにするか否か True:する False:しない
     """
 
+    # 設定ファイルの読み込み
+    config_ini = configparser.ConfigParser()
+    config_ini_path = "./config/settings.ini"
+
+    # 指定したiniファイルが存在しない場合、エラー発生
+    if not os.path.exists(config_ini_path):
+      raise FileNotFoundError(errno.ENOENT, os.strerror(
+          errno.ENOENT), config_ini_path)
+
+    config_ini.read(config_ini_path, encoding='utf-8')
+
+    # 本番モードか検証モードかの設定
+    mode = "KENSHO" if test_mode else "HONBAN"
+
     # 変数宣言
-    self.test_mode = test_mode
-    self.tag = tag
-    self.csv_path = "./csv/ramendb_data.csv"
-    self.error_log_path = "./log/error_log.log"
+    # エラーログファイル格納場所
+    self.ERROR_LOG_PATH = config_ini.get(mode, "ERROR_LOG_PATH")
+
+    # ラーメンのタイプによって変数を設定する。
+    self.ramen_type = ramen_type
+    if self.ramen_type == "2":
+      # /_/_/_/_/_/家系_/_/_/_/_/_/
+      # ラーメンデータベースから取得したデータを格納するCSVのファイルパス
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMEN_DB_CSV_PATH")
+
+    elif self.ramen_type == "3":
+      # /_/_/_/_/_/二郎系/_/_/_/_/_/
+      # ラーメンデータベースから取得したデータを格納するCSVのファイルパス
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMEN_DB_CSV_PATH")
 
     # エラーログ出力レベルの設定
-    logging.basicConfig(filename="./log/error.log", level=logging.ERROR)
+    logging.basicConfig(filename=self.ERROR_LOG_PATH, level=logging.ERROR)
 
   def get_shop_list(self):
     """
@@ -232,15 +258,14 @@ class GetRamenDb() :
 
     df = pd.DataFrame(data, columns=header)
 
-
-
     if page_num == 1:
       # １ページ目のみヘッダーを出力する。
       # CSVファイルを出力
-      df.to_csv(self.csv_path, index=False, encoding="utf-8")
+      df.to_csv(self.RAMEN_DB_CSV_PATH, index=False, encoding="utf-8")
     else:
       # 2ページ目以降は追記モードにする。
-      df.to_csv(self.csv_path, index=False, header=False, encoding="utf-8", mode="a")
+      df.to_csv(self.RAMEN_DB_CSV_PATH, index=False,
+                header=False, encoding="utf-8", mode="a")
 
 if __name__ == "__main__":
   grd = GetRamenDb("3", False)

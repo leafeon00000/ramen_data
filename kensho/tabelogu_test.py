@@ -8,6 +8,7 @@ import requests
 import json
 import time
 import re
+import pandas as pd
 
 CHROMEDRIVER_PATH = "./lib/chromedriver"
 TABELOG_URL = "https://tabelog.com/"
@@ -20,6 +21,8 @@ shop_name = "らぁ麺 飯田商店"
 
 #shop_name = "ラaaaaaaaaaa"
 
+shop_name = "ジャンクガレッジ イオンレイクタウンmori店"
+
 # オプションからヘッドレスモードを設定
 option = Options()
 option.add_argument('--headless')
@@ -28,6 +31,9 @@ option.add_argument('--headless')
 chrome_service = fs.Service(executable_path = CHROMEDRIVER_PATH)
 #Chromeを操作するドライバーを生成
 driver = webdriver.Chrome(service=chrome_service, options=option)
+
+# 見つからなかった際のショップ名リスト
+not_found_shop_list = "./kensho/csv/not_found_shop_list.csv"
 
 # 食べログへアクセス
 driver.get(TABELOG_URL)
@@ -48,6 +54,12 @@ search_result = driver.find_elements_by_css_selector(".js-rstlist-info.rstlist-i
 if len(search_result) == 0:
   # 一致する店名がない場合は終了
   print("一致する名前の店名がありませんでした。 : " + shop_name)
+
+  df = pd.DataFrame([
+      ["2", "113", shop_name]
+  ])
+
+  df.to_csv(not_found_shop_list, index=False, header=False, encoding="utf-8", mode="a")
 
 else:
   # 一致する店名があった場合は一番上のリンクから店舗詳細を取得しにいく。

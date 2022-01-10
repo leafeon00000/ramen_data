@@ -20,13 +20,13 @@ class GetTabelogData():
   食べログからデータを取得する。
   """
 
-  def __init__(self, tag, test_mode):
+  def __init__(self, ramen_type, test_mode):
     """
     コンストラクタ　変数を設定する
 
     Parameters
     ----------
-    tag : String
+    ramen_type : String
       "2" : 家系  "3" : 二郎系
     test_mode : boolian
       テストモードにするか否か True:する False:しない
@@ -46,20 +46,33 @@ class GetTabelogData():
     mode = "KENSHO" if test_mode else "HONBAN"
 
     ## 変数宣言 ##
-    # ラーメンデータベースから取得したCSVのファイルパス
-    self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "RAMEN_DB_CSV_PATH")
     # エラーログファイル格納場所
     self.ERROR_LOG_PATH = config_ini.get(mode, "ERROR_LOG_PATH")
     # Chromeドライバーの配置場所
     self.CHROMEDRIVER_PATH = config_ini.get(mode, "CHROMEDRIVER_PATH")
     # 食べログのURL
     self.TABELOG_URL = config_ini.get(mode, "TABELOG_URL")
-    # 食べログから取得したデータを格納するCSVファイルパス
-    self.TABELOG_CSV_PATH = config_ini.get(mode, "TABELOG_CSV_PATH")
+    # 見つからなかった時に出力するリスト
+    self.NOT_FOUND_SHOP_LIST = config_ini.get(mode, "NOT_FOUND_SHOP_LIST")
+
+    # ラーメンのタイプによって変数を設定する。
+    self.ramen_type = ramen_type
+    if self.ramen_type == "2":
+      # /_/_/_/_/_/家系_/_/_/_/_/_/
+      # ラーメンデータベースから取得したCSVのファイルパス
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMEN_DB_CSV_PATH")
+      # 食べログから取得したデータを格納するCSVファイルパス
+      self.TABELOG_CSV_PATH = config_ini.get(mode, "IE_TABELOG_CSV_PATH")
+
+    elif self.ramen_type == "3":
+      # /_/_/_/_/_/二郎系/_/_/_/_/_/
+      # ラーメンデータベースから取得したCSVのファイルパス
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMEN_DB_CSV_PATH")
+      # 食べログから取得したデータを格納するCSVファイルパス
+      self.TABELOG_CSV_PATH = config_ini.get(mode, "JIRO_TABELOG_CSV_PATH")
+
     # ヘッダーを出力するかどうかのフラグ（CSVファイルを出力する際に最初のページかどうかを判定する。）
     self.top_page_flg = True
-
-    print(self.CHROMEDRIVER_PATH)
 
     # エラーログ出力レベルの設定
     logging.basicConfig(filename=self.ERROR_LOG_PATH, level=logging.ERROR)
@@ -111,6 +124,8 @@ class GetTabelogData():
 
     for shop_info in df.itertuples():
 
+      print(shop_info[0], shop_info[1], shop_info[2])
+
       # 食べログへアクセス
       driver.get(self.TABELOG_URL)
 
@@ -133,6 +148,17 @@ class GetTabelogData():
         # 一致する店名がない場合は終了
         print("一致する名前の店名がありませんでした。 : " +
               str(shop_info[1]) + ". " + shop_info[2])
+
+        try:
+          # 見つからなかったショップ名をCSVファイルに出力する。
+          df = pd.DataFrame([[self.ramen_type, shop_info[1], shop_info[2]]])
+          df.to_csv(self.NOT_FOUND_SHOP_LIST, index=False,
+                header=False, encoding="utf-8", mode="a")
+        except:
+          # エラーログ出力
+          dt_now = datetime.datetime.now()
+          logging.error(str(dt_now) + "【" +
+                        shop_info[2] + "】 でNOT_FOUND_CSV出力失敗。\r\n" + traceback.format_exc())
 
       else:
         # 一致する店名があった場合は一番上のリンクから店舗詳細を取得しにいく。
@@ -158,7 +184,7 @@ class GetTabelogData():
         try:
 
           # 店舗情報を取得していく。
-          tabelog_shop_info.append(str(shop_info[0]))  # ID
+          tabelog_shop_info.append(str(shop_info[1]))  # ID
           tabelog_shop_info.append(js["name"])  # 店名
           tabelog_shop_info.append(target_url)  # URL
           if js["aggregateRating"] is None:
@@ -256,5 +282,5 @@ class GetTabelogData():
 
 
 if __name__ == "__main__":
-  gtd = GetTabelogData("3", False)
+  gtd = GetTabelogData("3", True)
   gtd.get_tabelog_data()
