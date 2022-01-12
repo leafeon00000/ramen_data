@@ -52,27 +52,36 @@ class GetTabelogData():
     self.CHROMEDRIVER_PATH = config_ini.get(mode, "CHROMEDRIVER_PATH")
     # 食べログのURL
     self.TABELOG_URL = config_ini.get(mode, "TABELOG_URL")
-    # 見つからなかった時に出力するリスト
-    self.NOT_FOUND_SHOP_LIST = config_ini.get(mode, "NOT_FOUND_SHOP_LIST")
+
 
     # ラーメンのタイプによって変数を設定する。
     self.ramen_type = ramen_type
     if self.ramen_type == "2":
       # /_/_/_/_/_/家系_/_/_/_/_/_/
       # ラーメンデータベースから取得したCSVのファイルパス
-      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMEN_DB_CSV_PATH")
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMENDB_CSV_PATH")
       # 食べログから取得したデータを格納するCSVファイルパス
       self.TABELOG_CSV_PATH = config_ini.get(mode, "IE_TABELOG_CSV_PATH")
+      # 見つからなかった時に出力するリスト
+      self.NOT_FOUND_SHOP_LIST = config_ini.get(mode, "IE_NOT_FOUND_SHOP_LIST")
+      # 見つかっている店舗のリスト
+      self.FOUND_SHOP_LIST = config_ini.get(mode, "IE_FOUND_SHOP_LIST")
 
     elif self.ramen_type == "3":
       # /_/_/_/_/_/二郎系/_/_/_/_/_/
       # ラーメンデータベースから取得したCSVのファイルパス
-      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMEN_DB_CSV_PATH")
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMENDB_CSV_PATH")
       # 食べログから取得したデータを格納するCSVファイルパス
       self.TABELOG_CSV_PATH = config_ini.get(mode, "JIRO_TABELOG_CSV_PATH")
+      # 見つからなかった時に出力するリスト
+      self.NOT_FOUND_SHOP_LIST = config_ini.get(mode, "JIRO_NOT_FOUND_SHOP_LIST")
+      # 見つかっている店舗のリスト
+      self.FOUND_SHOP_LIST = config_ini.get(mode, "JIRO_FOUND_SHOP_LIST")
 
     # ヘッダーを出力するかどうかのフラグ（CSVファイルを出力する際に最初のページかどうかを判定する。）
     self.top_page_flg = True
+    # ヘッダーを出力するかどうかのフラグ（CSVファイルを出力する際に最初のページかどうかを判定する。）
+    self.top_page_flg_not_found = True
 
     # エラーログ出力レベルの設定
     logging.basicConfig(filename=self.ERROR_LOG_PATH, level=logging.ERROR)
@@ -150,10 +159,25 @@ class GetTabelogData():
               str(shop_info[1]) + ". " + shop_info[2])
 
         try:
+
           # 見つからなかったショップ名をCSVファイルに出力する。
-          df = pd.DataFrame([[self.ramen_type, shop_info[1], shop_info[2]]])
-          df.to_csv(self.NOT_FOUND_SHOP_LIST, index=False,
-                header=False, encoding="utf-8", mode="a")
+          if self.top_page_flg_not_found:
+            # 最初の時のみheaderを追加する。
+            header = ["ramen_type", "id", "shop_name"]
+
+            df = pd.DataFrame([[self.ramen_type, shop_info[1], shop_info[2]]], columns=header)
+            df.to_csv(self.NOT_FOUND_SHOP_LIST, index=False,
+                      header=True, encoding="utf-8")
+
+            # フラグを変更する。
+            self.top_page_flg_not_found = False
+
+          else:
+            # 2回目以降は追記モードで
+            df = pd.DataFrame([[self.ramen_type, shop_info[1], shop_info[2]]])
+            df.to_csv(self.NOT_FOUND_SHOP_LIST, index=False,
+                  header=False, encoding="utf-8", mode="a")
+
         except:
           # エラーログ出力
           dt_now = datetime.datetime.now()

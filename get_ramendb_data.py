@@ -10,7 +10,7 @@ import configparser
 import os
 import errno
 
-class GetRamenDb() :
+class GetRamendbData() :
   """
   ラーメンデータベースからラーメン屋情報を取得するクラス。
   """
@@ -39,7 +39,8 @@ class GetRamenDb() :
     config_ini.read(config_ini_path, encoding='utf-8')
 
     # 本番モードか検証モードかの設定
-    mode = "KENSHO" if test_mode else "HONBAN"
+    self.test_mode = test_mode
+    mode = "KENSHO" if self.test_mode else "HONBAN"
 
     # 変数宣言
     # エラーログファイル格納場所
@@ -50,12 +51,12 @@ class GetRamenDb() :
     if self.ramen_type == "2":
       # /_/_/_/_/_/家系_/_/_/_/_/_/
       # ラーメンデータベースから取得したデータを格納するCSVのファイルパス
-      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMEN_DB_CSV_PATH")
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMENDB_CSV_PATH")
 
     elif self.ramen_type == "3":
       # /_/_/_/_/_/二郎系/_/_/_/_/_/
       # ラーメンデータベースから取得したデータを格納するCSVのファイルパス
-      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMEN_DB_CSV_PATH")
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMENDB_CSV_PATH")
 
     # エラーログ出力レベルの設定
     logging.basicConfig(filename=self.ERROR_LOG_PATH, level=logging.ERROR)
@@ -67,7 +68,6 @@ class GetRamenDb() :
 
     ramendb_url_pre = "https://ramendb.supleks.jp/search?page="
     ramendb_url_suf = "&order=point&station-id=0&tags="
-    tag = self.tag
 
     # 変数宣言等
     store_exist_flg = True
@@ -80,7 +80,7 @@ class GetRamenDb() :
       store_info_list = []
 
       # urlを作成
-      url = ramendb_url_pre + str(page_num) + ramendb_url_suf + tag
+      url = ramendb_url_pre + str(page_num) + ramendb_url_suf + self.ramen_type
 
       # スクレイピング対象の URL にリクエストを送り HTML を取得する
       res = requests.get(url)
@@ -268,5 +268,5 @@ class GetRamenDb() :
                 header=False, encoding="utf-8", mode="a")
 
 if __name__ == "__main__":
-  grd = GetRamenDb("3", False)
+  grd = GetRamendbData("3", False)
   grd.get_shop_list()
