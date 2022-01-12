@@ -43,7 +43,7 @@ class MakeRamenMap() :
     if self.ramen_type == "2":
       # /_/_/_/_/_/家系_/_/_/_/_/_/
       # ラーメンデータベースから取得したCSVのファイルパス
-      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMEN_DB_CSV_PATH")
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "IE_RAMENDB_CSV_PATH")
       # 食べログから取得したデータを格納するCSVファイルパス
       self.TABELOG_CSV_PATH = config_ini.get(mode, "IE_TABELOG_CSV_PATH")
       # 作成したマップのファイルのパス
@@ -52,7 +52,7 @@ class MakeRamenMap() :
     elif self.ramen_type == "3":
       # /_/_/_/_/_/二郎系/_/_/_/_/_/
       # ラーメンデータベースから取得したCSVのファイルパス
-      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMEN_DB_CSV_PATH")
+      self.RAMEN_DB_CSV_PATH = config_ini.get(mode, "JIRO_RAMENDB_CSV_PATH")
       # 食べログから取得したデータを格納するCSVファイルパス
       self.TABELOG_CSV_PATH = config_ini.get(mode, "JIRO_TABELOG_CSV_PATH")
       # 作成したマップのファイルのパス
@@ -231,7 +231,7 @@ class MakeRamenMap() :
 
     if not official_site == "":
       links += "<a href='" + official_site + \
-          "' target='_blank' rel='noopener noreferrer'> 公式 </a>"
+          "' target='_blank' rel='noopener noreferrer'> <img src='../icon/official_icon.png'> </a>"
     if not facebook == "":
       links += "<a href='" + facebook + "' target='_blank' rel='noopener noreferrer'><img src='../icon/facebook.png'> </a>"
     if not twitter == "":
@@ -254,7 +254,10 @@ class MakeRamenMap() :
           "' target='_blank'> <img src='../icon/tabelog.png'> </a> " + \
           str(tblg_rating_value) + "点 </span>" + "</br>"
 
-    popup = popup + links
+    # リンクがある場合のみ実行する処理
+    if not len(links) == 0:
+      links = "<span style = 'white-space: nowrap' > <img src = '../icon/link_icon.png' > " + links + "</span >"
+      popup = popup + links
 
     return popup
 
